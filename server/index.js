@@ -8,6 +8,11 @@ require('dotenv').config(); // Loads secret keys from .env file (keep your passw
 
 // Import our custom database connection function
 const connectDB = require('./config/db');
+const passport = require('passport');
+const session = require('express-session');
+
+// Passport config
+require('./config/passport')(passport);
 
 // --- 2. SERVER INITIALIZATION ---
 // Create the Express app (the "brain")
@@ -33,6 +38,17 @@ connectDB();
 // Middleware runs before your routes.
 app.use(cors()); // Enable Cross-Origin Resource Sharing (allows frontend to talk to backend)
 app.use(express.json()); // Parses incoming JSON data (e.g., login form data)
+
+// Express session
+app.use(session({
+  secret: process.env.JWT_SECRET || 'secret',
+  resave: true,
+  saveUninitialized: true
+}));
+
+// Passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
 
 // --- 4. ROUTES ---
 // Map URL paths to specific route files.

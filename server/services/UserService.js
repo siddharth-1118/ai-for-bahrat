@@ -121,7 +121,7 @@ class UserService {
     }
 
     let progressRecord = user.learningProgress.find(p => p.courseId === courseId);
-    
+
     if (!progressRecord) {
       progressRecord = {
         courseId: progressData.courseId,
@@ -140,6 +140,9 @@ class UserService {
       progressRecord.completedAt = new Date();
       // Send achievement notification when course is completed
       RealTimeNotificationService.sendAchievementNotification(userId, `Completed ${progressRecord.courseName}`);
+
+      // Award coins for completion (e.g., 50 coins)
+      await this.addEarnings(userId, 50, `Completed ${progressRecord.courseName}`);
     }
 
     if (!progressRecord.startedAt) {
@@ -147,13 +150,38 @@ class UserService {
     }
 
     await user.save();
-    
+
     // Send progress update notification if progress increased significantly
     if (progressData.progress > oldProgress && progressData.progress % 25 === 0) { // Every 25%
       RealTimeNotificationService.sendProgressUpdate(userId, progressRecord.courseName, progressData.progress);
     }
-    
+
     return progressRecord;
+  }
+
+  // Add earnings/coins to user
+  static async addEarnings(userId, amount, source) {
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    if (!user.earnings) user.earnings = 0;
+    if (!user.earningHistory) user.earningHistory = [];
+
+    user.earnings += amount;
+    user.earningHistory.push({
+      amount,
+      source,
+      timestamp: new Date()
+    });
+
+    await user.save();
+
+    // Notify user of earnings
+    RealTimeNotificationService.sendAchievementNotification(userId, `You earned ${amount} Bharat Coins!`);
+
+    return user.earnings;
   }
 }
 

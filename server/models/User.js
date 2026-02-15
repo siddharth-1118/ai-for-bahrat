@@ -10,6 +10,21 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
+  password: {
+    type: String
+  },
+  googleId: {
+    type: String
+  },
+  earnings: {
+    type: Number,
+    default: 0
+  },
+  earningHistory: [{
+    amount: Number,
+    source: String, // 'course-completion', 'daily-login', etc.
+    timestamp: { type: Date, default: Date.now }
+  }],
   preferences: {
     learningGoals: [String],
     preferredLanguages: [String],
