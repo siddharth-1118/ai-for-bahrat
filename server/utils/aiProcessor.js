@@ -1,13 +1,11 @@
-const { OpenAI } = require('openai');
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Initialize Gemini
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 class AIProcessor {
   constructor() {
-    this.model = 'gpt-3.5-turbo';
-    this.openai = openai;
+    this.model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
   }
 
   // Utility function to extract JSON from AI response
@@ -46,21 +44,27 @@ class AIProcessor {
     3. Practice projects (array of project ideas)
     4. Assessment criteria (array of evaluation metrics)
     
-    Format as JSON with keys: weeks, resources, projects, assessments`;
+    Format as JSON with keys: weeks, resources, projects, assessments. 
+    IMPORTANT: Return ONLY valid JSON.`;
 
     try {
-      const completion = await this.openai.chat.completions.create({
-        messages: [{ role: "user", content: prompt }],
-        model: this.model,
-      });
+      const result = await this.model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
 
-      // Clean up the response to extract only the JSON part
-      const responseText = completion.choices[0].message.content.trim();
-      
-      return this.extractJsonFromResponse(responseText);
+      return this.extractJsonFromResponse(text);
     } catch (error) {
       console.error('Error generating learning path:', error);
-      throw error;
+      // Fallback response
+      return {
+        weeks: [
+          { title: "Introduction to " + skill, description: "Learn the basics of " + skill },
+          { title: "Advanced Topics", description: "Deep dive into advanced concepts" }
+        ],
+        resources: ["Official Documentation", "YouTube Tutorials"],
+        projects: [{ title: "Build a Portfolio Project", description: "Apply what you learned" }],
+        assessments: ["Complete a final assessment"]
+      };
     }
   }
 
@@ -74,17 +78,15 @@ class AIProcessor {
     3. Best practices demonstrated
     4. Potential improvements
     
-    Format as JSON with keys: explanation, concepts, bestPractices, improvements`;
+    Format as JSON with keys: explanation, concepts, bestPractices, improvements.
+    IMPORTANT: Return ONLY valid JSON.`;
 
     try {
-      const completion = await this.openai.chat.completions.create({
-        messages: [{ role: "user", content: prompt }],
-        model: this.model,
-      });
+      const result = await this.model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
 
-      const responseText = completion.choices[0].message.content.trim();
-      
-      return this.extractJsonFromResponse(responseText);
+      return this.extractJsonFromResponse(text);
     } catch (error) {
       console.error('Error explaining code:', error);
       throw error;
@@ -97,17 +99,16 @@ class AIProcessor {
     Return JSON with:
     - exercises array with: title, description, hints, solution_outline
     - estimated_time_per_exercise (in minutes)
-    - learning_objectives (array)`;
+    - learning_objectives (array)
+    
+    IMPORTANT: Return ONLY valid JSON.`;
 
     try {
-      const completion = await this.openai.chat.completions.create({
-        messages: [{ role: "user", content: prompt }],
-        model: this.model,
-      });
+      const result = await this.model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
 
-      const responseText = completion.choices[0].message.content.trim();
-      
-      return this.extractJsonFromResponse(responseText);
+      return this.extractJsonFromResponse(text);
     } catch (error) {
       console.error('Error generating practice exercises:', error);
       throw error;
@@ -126,17 +127,15 @@ class AIProcessor {
     3. Focus improvement suggestions (array)
     4. Tool recommendations (array)
     
-    Format as JSON with keys: insights, timeManagement, focusTips, tools`;
+    Format as JSON with keys: insights, timeManagement, focusTips, tools.
+    IMPORTANT: Return ONLY valid JSON.`;
 
     try {
-      const completion = await this.openai.chat.completions.create({
-        messages: [{ role: "user", content: prompt }],
-        model: this.model,
-      });
+      const result = await this.model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
 
-      const responseText = completion.choices[0].message.content.trim();
-      
-      return this.extractJsonFromResponse(responseText);
+      return this.extractJsonFromResponse(text);
     } catch (error) {
       console.error('Error analyzing productivity:', error);
       throw error;
@@ -155,17 +154,15 @@ class AIProcessor {
     3. Code examples (relevant code snippets)
     4. Common pitfalls to avoid (potential mistakes)
     
-    Format as JSON with keys: breakdown, approach, examples, pitfalls`;
+    Format as JSON with keys: breakdown, approach, examples, pitfalls.
+    IMPORTANT: Return ONLY valid JSON.`;
 
     try {
-      const completion = await this.openai.chat.completions.create({
-        messages: [{ role: "user", content: prompt }],
-        model: this.model,
-      });
+      const result = await this.model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
 
-      const responseText = completion.choices[0].message.content.trim();
-      
-      return this.extractJsonFromResponse(responseText);
+      return this.extractJsonFromResponse(text);
     } catch (error) {
       console.error('Error generating coding help:', error);
       throw error;
@@ -182,16 +179,15 @@ class AIProcessor {
     3. Practice methods (ways to reinforce learning)
     4. Motivation tips (how to stay motivated)
     
-    Format as JSON with keys: strategies, resources, practiceMethods, motivationTips`;
+    Format as JSON with keys: strategies, resources, practiceMethods, motivationTips.
+    IMPORTANT: Return ONLY valid JSON.`;
 
     try {
-      const completion = await this.openai.chat.completions.create({
-        messages: [{ role: "user", content: prompt }],
-        model: this.model,
-      });
+      const result = await this.model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
 
-      const responseText = completion.choices[0].message.content.trim();
-      return this.extractJsonFromResponse(responseText);
+      return this.extractJsonFromResponse(text);
     } catch (error) {
       console.error('Error getting study tips:', error);
       throw error;
@@ -210,16 +206,14 @@ class AIProcessor {
     4. Best practices adherence
     5. Suggestions for improvement
     
-    Format as JSON with keys: quality, performance, security, bestPractices, suggestions`;
+    Format as JSON with keys: quality, performance, security, bestPractices, suggestions.
+    IMPORTANT: Return ONLY valid JSON.`;
 
     try {
-      const completion = await this.openai.chat.completions.create({
-        messages: [{ role: "user", content: prompt }],
-        model: this.model,
-      });
-
-      const responseText = completion.choices[0].message.content.trim();
-      return this.extractJsonFromResponse(responseText);
+      const result = await this.model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
+      return this.extractJsonFromResponse(text);
     } catch (error) {
       console.error('Error getting code review:', error);
       throw error;
@@ -237,19 +231,34 @@ class AIProcessor {
     3. Process improvements (ways to streamline)
     4. Time-saving techniques (efficiency tips)
     
-    Format as JSON with keys: automation, tools, processImprovements, timeSavers`;
+    Format as JSON with keys: automation, tools, processImprovements, timeSavers.
+    IMPORTANT: Return ONLY valid JSON.`;
 
     try {
-      const completion = await this.openai.chat.completions.create({
-        messages: [{ role: "user", content: prompt }],
-        model: this.model,
-      });
+      const result = await this.model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
 
-      const responseText = completion.choices[0].message.content.trim();
-      
-      return this.extractJsonFromResponse(responseText);
+      return this.extractJsonFromResponse(text);
     } catch (error) {
       console.error('Error optimizing workflow:', error);
+      throw error;
+    }
+  }
+  async chat(message, history = []) {
+    const chat = this.model.startChat({
+      history: history.map(msg => ({
+        role: msg.role === 'user' ? 'user' : 'model',
+        parts: [{ text: msg.content }]
+      })),
+    });
+
+    try {
+      const result = await chat.sendMessage(message);
+      const response = await result.response;
+      return response.text();
+    } catch (error) {
+      console.error('Error in chat:', error);
       throw error;
     }
   }

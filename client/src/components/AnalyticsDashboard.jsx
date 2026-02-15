@@ -17,19 +17,19 @@ const AnalyticsDashboard = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      
+
       // Fetch all analytics data in parallel
       const [analyticsRes, insightsRes, recsRes, weeklyRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/analytics/user', {
+        axios.get('/api/analytics/user', {
           headers: { 'x-auth-token': token }
         }),
-        axios.get('http://localhost:5000/api/analytics/productivity', {
+        axios.get('/api/analytics/productivity', {
           headers: { 'x-auth-token': token }
         }),
-        axios.get('http://localhost:5000/api/analytics/recommendations', {
+        axios.get('/api/analytics/recommendations', {
           headers: { 'x-auth-token': token }
         }),
-        axios.get('http://localhost:5000/api/analytics/weekly-report', {
+        axios.get('/api/analytics/weekly-report', {
           headers: { 'x-auth-token': token }
         })
       ]);
@@ -58,9 +58,9 @@ const AnalyticsDashboard = () => {
   return (
     <div className="container">
       <h1>Learning Analytics Dashboard</h1>
-      
+
       {error && <div className="error">{error}</div>}
-      
+
       <div className="analytics-grid">
         {/* Stats Cards */}
         {analytics && (

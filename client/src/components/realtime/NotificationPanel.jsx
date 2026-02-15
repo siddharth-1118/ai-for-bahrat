@@ -13,8 +13,9 @@ export const NotificationProvider = ({ children, userId }) => {
 
   useEffect(() => {
     // Connect to socket server
-    const newSocket = io('http://localhost:5000', {
-      transports: ['websocket']
+    // Use relative path so it works on Vercel (same origin) and Local (via Vite proxy)
+    const newSocket = io('/', {
+      transports: ['websocket', 'polling']
     });
 
     setSocket(newSocket);

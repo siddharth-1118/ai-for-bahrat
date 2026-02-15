@@ -16,6 +16,9 @@ const userSchema = new mongoose.Schema({
   googleId: {
     type: String
   },
+  avatar: {
+    type: String
+  },
   earnings: {
     type: Number,
     default: 0

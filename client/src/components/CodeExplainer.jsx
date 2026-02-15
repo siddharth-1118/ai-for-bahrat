@@ -12,9 +12,9 @@ const CodeExplainer = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
-    
+
     try {
-      const response = await axios.post('http://localhost:5000/api/learning/explain-code', {
+      const response = await axios.post('/api/learning/explain-code', {
         code: codeInput,
         language
       });
@@ -82,7 +82,7 @@ function factorial(n) {
       {result && (
         <div className="card">
           <h2>Code Explanation</h2>
-          
+
           <div className="explanation-section">
             <h3>What This Code Does</h3>
             <p>{result.explanation || result.description || 'No explanation available.'}</p>

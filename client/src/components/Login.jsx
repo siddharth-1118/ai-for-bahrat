@@ -41,7 +41,8 @@ const Login = ({ setUser }) => {
     setError('');
 
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', formData);
+      // Use relative path - Vite proxy (dev) or Vercel rewrite (prod) will handle it
+      const response = await axios.post('/api/auth/login', formData);
 
       // Store token and user info
       localStorage.setItem('token', response.data.token);
@@ -57,7 +58,8 @@ const Login = ({ setUser }) => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = 'http://localhost:5000/api/auth/google';
+    // Navigate to relative URL
+    window.location.href = '/api/auth/google';
   };
 
   return (
@@ -67,16 +69,7 @@ const Login = ({ setUser }) => {
 
         {error && <div className="error">{error}</div>}
 
-        <button
-          type="button"
-          className="btn"
-          style={{ backgroundColor: '#db4437', marginBottom: '20px' }}
-          onClick={handleGoogleLogin}
-        >
-          Login with Google
-        </button>
-
-        <div style={{ textAlign: 'center', margin: '10px 0' }}>OR</div>
+        {error && <div className="error">{error}</div>}
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">

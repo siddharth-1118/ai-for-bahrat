@@ -16,10 +16,24 @@ const LearningPath = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
-    
+
     try {
-      const response = await axios.post('http://localhost:5000/api/learning/path', formData);
+      // 1. Generate Learning Path
+      const response = await axios.post('/api/learning/path', formData);
       setResult(response.data);
+
+      // 2. Save preferences to User Profile (Backend Integration)
+      const token = localStorage.getItem('token');
+      if (token) {
+        const config = { headers: { 'x-auth-token': token } };
+        await axios.put('/api/users/preferences', {
+          preferences: {
+            learningGoals: [formData.goals],
+            preferredLanguages: [formData.skill] // Using skill as a proxy for language context in this MVP
+          }
+        }, config);
+      }
+
     } catch (err) {
       setError('Failed to generate learning path. Please try again.');
       console.error(err);
@@ -38,21 +52,29 @@ const LearningPath = () => {
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="skill">Skill to Learn</label>
-              <input
-                type="text"
+              <select
                 id="skill"
                 value={formData.skill}
-                onChange={(e) => setFormData({...formData, skill: e.target.value})}
-                placeholder="e.g., JavaScript, Python, React, etc."
+                onChange={(e) => setFormData({ ...formData, skill: e.target.value })}
                 required
-              />
+              >
+                <option value="">Select a Skill</option>
+                <option value="JavaScript">JavaScript</option>
+                <option value="Python">Python</option>
+                <option value="React">React</option>
+                <option value="Node.js">Node.js</option>
+                <option value="Java">Java</option>
+                <option value="C++">C++</option>
+                <option value="Data Science">Data Science</option>
+                <option value="Machine Learning">Machine Learning</option>
+              </select>
             </div>
             <div className="form-group">
               <label htmlFor="experienceLevel">Experience Level</label>
               <select
                 id="experienceLevel"
                 value={formData.experienceLevel}
-                onChange={(e) => setFormData({...formData, experienceLevel: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, experienceLevel: e.target.value })}
               >
                 <option value="beginner">Beginner</option>
                 <option value="intermediate">Intermediate</option>
@@ -63,14 +85,20 @@ const LearningPath = () => {
 
           <div className="form-group">
             <label htmlFor="goals">Learning Goals</label>
-            <textarea
+            <select
               id="goals"
               value={formData.goals}
-              onChange={(e) => setFormData({...formData, goals: e.target.value})}
-              placeholder="What do you want to achieve? (e.g., build web apps, get a job, contribute to open source)"
-              rows="3"
+              onChange={(e) => setFormData({ ...formData, goals: e.target.value })}
               required
-            ></textarea>
+            >
+              <option value="">Select a Goal</option>
+              <option value="Build a Portfolio">Build a Portfolio</option>
+              <option value="Get Hired">Get Hired / Career Change</option>
+              <option value="Freelancing">Freelancing</option>
+              <option value="Contribute to Open Source">Contribute to Open Source</option>
+              <option value="Build a Startup">Build a Startup</option>
+              <option value="Academic Research">Academic Research</option>
+            </select>
           </div>
 
           <div className="form-group">
@@ -79,9 +107,8 @@ const LearningPath = () => {
               type="number"
               id="timeframe"
               value={formData.timeframe}
-              onChange={(e) => setFormData({...formData, timeframe: parseInt(e.target.value)})}
-              min="1"
-              max="52"
+              onChange={(e) => setFormData({ ...formData, timeframe: parseInt(e.target.value) })}
+              min="1" max="52"
               required
             />
           </div>
@@ -97,7 +124,7 @@ const LearningPath = () => {
       {result && (
         <div className="card">
           <h2>Your Personalized Learning Path</h2>
-          
+
           <div className="learning-path-content">
             <h3>Weekly Milestones</h3>
             <div className="milestones">

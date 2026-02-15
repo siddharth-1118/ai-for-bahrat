@@ -14,9 +14,9 @@ const ProductivityAnalyzer = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
-      const response = await axios.post('http://localhost:5000/api/productivity/analyze', formData);
+      const response = await axios.post('/api/productivity/analyze', formData);
       setResult(response.data);
       setActiveTab('insights');
     } catch (err) {
@@ -37,7 +37,7 @@ const ProductivityAnalyzer = () => {
     ];
 
     const getContent = () => {
-      switch(activeTab) {
+      switch (activeTab) {
         case 'insights':
           return (
             <div>
@@ -101,7 +101,7 @@ const ProductivityAnalyzer = () => {
             </button>
           ))}
         </div>
-        
+
         <div className="tab-content">
           {getContent()}
         </div>
@@ -121,7 +121,7 @@ const ProductivityAnalyzer = () => {
             <textarea
               id="workData"
               value={formData.workData}
-              onChange={(e) => setFormData({...formData, workData: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, workData: e.target.value })}
               placeholder="Describe your typical work activities (e.g., coding, meetings, research, testing)"
               rows="3"
               required
@@ -133,7 +133,7 @@ const ProductivityAnalyzer = () => {
             <textarea
               id="timeSpent"
               value={formData.timeSpent}
-              onChange={(e) => setFormData({...formData, timeSpent: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, timeSpent: e.target.value })}
               placeholder="How do you spend your time? (e.g., 60% coding, 20% meetings, 20% learning)"
               rows="3"
               required
@@ -145,7 +145,7 @@ const ProductivityAnalyzer = () => {
             <textarea
               id="challenges"
               value={formData.challenges}
-              onChange={(e) => setFormData({...formData, challenges: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, challenges: e.target.value })}
               placeholder="What challenges do you face? (e.g., distractions, difficult concepts, time management)"
               rows="3"
               required

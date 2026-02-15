@@ -92,6 +92,12 @@ const broadcastNotification = (userId, notification) => {
 // Make broadcast function available globally
 global.broadcastNotification = broadcastNotification;
 
-server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// For Vercel Serverless (Export the app)
+module.exports = app;
+
+// Only listen if running locally (not imported)
+if (require.main === module) {
+  server.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}

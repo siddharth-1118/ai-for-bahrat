@@ -24,7 +24,7 @@ const Dashboard = () => {
           }
         };
 
-        const res = await axios.get('http://localhost:5000/api/auth/me', config);
+        const res = await axios.get('/api/auth/me', config);
         const user = res.data.user;
 
         setStats({
@@ -75,6 +75,38 @@ const Dashboard = () => {
         </div>
       </div>
 
+
+      {/* Roadmap Section */}
+      <div className="card">
+        <h2>My Learning Roadmap 🚀</h2>
+        {/* We can fetch the roadmap dynamically or just show the same static one for now based on goal */}
+        {/* For this MVP, let's just show a placeholder if we don't have the sophisticated logic yet */}
+        <div className="timeline">
+          {[
+            { step: 'HTML & CSS', status: 'completed' },
+            { step: 'JavaScript', status: 'in-progress' },
+            { step: 'React', status: 'locked' },
+            { step: 'Backend', status: 'locked' }
+          ].map((item, index) => (
+            <div key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+              <div style={{
+                background: item.status === 'completed' ? '#2ecc71' : item.status === 'in-progress' ? '#f39c12' : '#bdc3c7',
+                color: 'white',
+                width: '30px',
+                height: '30px',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginRight: '15px',
+                fontSize: '0.8rem'
+              }}>{item.status === 'completed' ? '✓' : index + 1}</div>
+              <div style={{ color: item.status === 'locked' ? '#95a5a6' : '#2c3e50' }}>{item.step}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Quick Actions */}
       <div className="card">
         <h2>Quick Actions</h2>
@@ -122,7 +154,7 @@ const Dashboard = () => {
         </div>
       </div>
       <NotificationPanel />
-    </div>
+    </div >
   );
 };
 
